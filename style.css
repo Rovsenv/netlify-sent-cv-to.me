@@ -7,6 +7,76 @@
     --card-bg: #FFFFFF;
     --text-main: #1F2937;
     --text-muted: #6B7280;
+    --input-border: #D1D5DB;
+    --input-bg: #FFFFFF;
+    --drop-gradient-1: #ffffff;
+    --drop-gradient-2: #f8f9fa;
+    --glow-purple: rgba(79, 70, 229, 0.15);
+    --glow-green: rgba(16, 185, 129, 0.12);
+}
+
+[data-theme="dark"] {
+    --primary-color: #818CF8;
+    --primary-hover: #6366F1;
+    --error-color: #F87171;
+    --success-color: #34D399;
+    --bg-color: #111827;
+    --card-bg: #1F2937;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --input-border: #374151;
+    --input-bg: #374151;
+    --drop-gradient-1: #1F2937;
+    --drop-gradient-2: #111827;
+    --glow-purple: rgba(129, 140, 248, 0.2);
+    --glow-green: rgba(52, 211, 153, 0.15);
+}
+
+/* Tema dəyişdirmə düyməsi */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: var(--card-bg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle svg {
+    width: 24px;
+    height: 24px;
+    color: var(--text-main);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.theme-toggle .icon-moon {
+    position: absolute;
+    opacity: 0;
+    transform: rotate(-90deg);
+}
+
+[data-theme="dark"] .theme-toggle .icon-sun {
+    opacity: 0;
+    transform: rotate(90deg);
+}
+
+[data-theme="dark"] .theme-toggle .icon-moon {
+    opacity: 1;
+    transform: rotate(0deg);
 }
 
 * {
@@ -18,8 +88,8 @@
 
 body {
     background:
-        radial-gradient(circle at 10% 10%, rgba(79, 70, 229, 0.15), transparent 35%),
-        radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.12), transparent 40%),
+        radial-gradient(circle at 10% 10%, var(--glow-purple), transparent 35%),
+        radial-gradient(circle at 90% 90%, var(--glow-green), transparent 40%),
         var(--bg-color);
     display: flex;
     justify-content: center;
@@ -28,6 +98,7 @@ body {
     padding: 20px;
     position: relative;
     overflow: hidden;
+    transition: background 0.4s ease;
 }
 
 body::before,
@@ -64,16 +135,16 @@ body::after {
 }
 
 .card {
-    background: rgba(255, 255, 255, 0.86);
+    background: var(--card-bg);
     padding: 40px;
     border-radius: 16px;
     box-shadow: 0 14px 32px rgba(31, 41, 55, 0.12);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     width: 100%;
     max-width: 450px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s ease;
     position: relative;
     z-index: 1;
 }
@@ -144,46 +215,52 @@ label {
 input[type="email"] {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #D1D5DB;
+    border: 1px solid var(--input-border);
     border-radius: 8px;
     font-size: 14px;
     outline: none;
-    transition: border-color 0.3s;
+    background: var(--input-bg);
+    color: var(--text-main);
+    transition: border-color 0.3s, background 0.3s;
+}
+
+input[type="email"]::placeholder {
+    color: var(--text-muted);
 }
 
 input[type="email"]:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    box-shadow: 0 0 0 3px var(--glow-purple);
 }
 
 .file-drop-area {
-    border: 2px dashed #D1D5DB;
+    border: 2px dashed var(--input-border);
     border-radius: 12px;
     padding: 30px;
     text-align: center;
     cursor: pointer;
     position: relative;
     backdrop-filter: blur(2px);
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    background: linear-gradient(145deg, var(--drop-gradient-1), var(--drop-gradient-2));
     box-shadow:
         0 4px 15px rgba(0, 0, 0, 0.06),
         0 1px 3px rgba(0, 0, 0, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     transition:
         border-color 0.3s ease,
-        background-color 0.3s ease,
+        background 0.3s ease,
         transform 0.25s ease,
         box-shadow 0.25s ease;
 }
 
 .file-drop-area:hover, .file-drop-area.active {
     border-color: var(--primary-color);
-    background: linear-gradient(145deg, #ffffff, #f0f1ff);
+    background: linear-gradient(145deg, var(--drop-gradient-1), var(--card-bg));
     transform: translateY(-4px) scale(1.02);
     box-shadow:
-        0 12px 28px rgba(79, 70, 229, 0.15),
+        0 12px 28px var(--glow-purple),
         0 4px 10px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .file-drop-area.success {

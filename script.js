@@ -7,6 +7,33 @@ const statusMessage = document.getElementById('statusMessage');
 const submitBtn = document.getElementById('submitBtn');
 const gravityCanvas = document.getElementById('gravityBg');
 const dropArea = document.getElementById('dropArea');
+const themeToggle = document.getElementById('themeToggle');
+
+// Tema dəyişdirmə funksiyası
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else if (prefersDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+initTheme();
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+}
 
 // Sizin webhook ünvanınız
 const webhookUrl = 'https://n8n.datatek.tech/webhook-test/b7db9dbc-15b6-4137-8d3a-cff2d108cb8a';
