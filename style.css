@@ -643,4 +643,27 @@ button:disabled {
         bottom: 16px;
         right: 16px;
     }
+    
+    .chatbot-toggle.active {
+        bottom: calc(100vh - 60px);
+        z-index: 250;
+    }
+    
+    .chatbot-input-area {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+    
+    #chatInput {
+        font-size: 16px; /* Prevents iOS zoom */
+        padding: 10px 14px;
+        min-width: 0;
+    }
+    
+    .chat-send-btn {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        flex-shrink: 0;
+    }
 }
