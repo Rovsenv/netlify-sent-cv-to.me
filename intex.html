@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Yükləmə Portalı</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="card">
+        <h2>Karyeranıza Adım Atın</h2>
+        <p class="subtitle">CV-nizi yükləyin və komandamıza qoşulun</p>
+
+        <form id="cvForm">
+            <div class="form-group">
+                <label for="email">E-poçt ünvanınız</label>
+                <input type="email" id="email" placeholder="nümunə@mail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>CV Faylı (PDF və ya DOCX)</label>
+                <div class="file-drop-area" id="dropArea">
+                    <span id="dropText">Faylı bura sürükləyin və ya seçmək üçün klikləyin</span>
+                    <input type="file" id="cvFile" accept=".pdf, .docx, application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+                    <span id="fileName"></span>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">CV-ni Göndər</button>
+        </form>
+
+        <div id="statusMessage" class="message"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
