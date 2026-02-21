@@ -8,6 +8,99 @@ const submitBtn = document.getElementById('submitBtn');
 const gravityCanvas = document.getElementById('gravityBg');
 const dropArea = document.getElementById('dropArea');
 const themeToggle = document.getElementById('themeToggle');
+const langToggle = document.getElementById('langToggle');
+
+// Tərcümələr
+const translations = {
+    az: {
+        title: 'Karyera Dəstəyi Agenti',
+        subtitle: 'CV-nizi yükləyin və uyğunluğunu vakansiyalar əldə edin',
+        emailLabel: 'E-poçt ünvanınız',
+        emailPlaceholder: 'nümunə@mail.com',
+        fileLabel: 'CV Faylı (PDF və ya DOCX)',
+        dropText: 'Faylı bura sürükləyin və ya seçmək üçün klikləyin',
+        submitBtn: 'CV-ni Göndər',
+        submitLoading: 'Göndərilir...',
+        successMsg: 'CV uğurla yükləndi',
+        errorEmail: 'Zəhmət olmasa, düzgün e-poçt ünvanı daxil edin.',
+        errorFile: 'Zəhmət olmasa, CV faylını yükləyin.',
+        errorFormat: 'Yalnız PDF və DOCX formatları qəbul edilir!',
+        errorServer: 'Xəta baş verdi: CV göndərilə bilmədi',
+        pageTitle: 'CV Yükləmə Portalı'
+    },
+    en: {
+        title: 'Career Support Agent',
+        subtitle: 'Upload your CV and get matched vacancys',
+        emailLabel: 'Your email address',
+        emailPlaceholder: 'example@mail.com',
+        fileLabel: 'CV File (PDF or DOCX)',
+        dropText: 'Drag file here or click to select',
+        submitBtn: 'Submit CV',
+        submitLoading: 'Submitting...',
+        successMsg: 'CV uploaded successfully',
+        errorEmail: 'Please enter a valid email address.',
+        errorFile: 'Please upload your CV file.',
+        errorFormat: 'Only PDF and DOCX formats are accepted!',
+        errorServer: 'Error: Could not submit CV',
+        pageTitle: 'CV Upload Portal'
+    }
+};
+
+let currentLang = 'az';
+
+function initLang() {
+    const savedLang = localStorage.getItem('lang');
+    if (savedLang && translations[savedLang]) {
+        currentLang = savedLang;
+    }
+    applyTranslations();
+    updateLangButton();
+}
+
+function toggleLang() {
+    currentLang = currentLang === 'az' ? 'en' : 'az';
+    localStorage.setItem('lang', currentLang);
+    applyTranslations();
+    updateLangButton();
+}
+
+function updateLangButton() {
+    const langText = langToggle?.querySelector('.lang-text');
+    if (langText) {
+        langText.textContent = currentLang === 'az' ? 'EN' : 'AZ';
+    }
+}
+
+function applyTranslations() {
+    const t = translations[currentLang];
+    
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) {
+            el.textContent = t[key];
+        }
+    });
+    
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (t[key]) {
+            el.placeholder = t[key];
+        }
+    });
+    
+    document.title = t.pageTitle;
+    document.documentElement.lang = currentLang;
+}
+
+function getTranslation(key) {
+    return translations[currentLang][key] || key;
+}
+
+initLang();
+
+if (langToggle) {
+    langToggle.addEventListener('click', toggleLang);
+}
 
 // Tema dəyişdirmə funksiyası
 function initTheme() {
@@ -156,7 +249,7 @@ fileInput.addEventListener('change', function() {
             this.value = '';
             fileNameDisplay.textContent = '';
             dropText.style.display = 'block';
-            showMessage('Yalnız PDF və DOCX formatları qəbul edilir!', 'error');
+            showMessage(getTranslation('errorFormat'), 'error');
             return;
         }
 
@@ -188,13 +281,13 @@ form.addEventListener('submit', async function(e) {
     // 1. E-poçt yoxlanışı
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        showMessage('Zəhmət olmasa, düzgün e-poçt ünvanı daxil edin.', 'error');
+        showMessage(getTranslation('errorEmail'), 'error');
         return;
     }
 
     // 2. Faylın mövcudluq yoxlanışı
     if (!file) {
-        showMessage('Zəhmət olmasa, CV faylını yükləyin.', 'error');
+        showMessage(getTranslation('errorFile'), 'error');
         return;
     }
 
@@ -204,7 +297,7 @@ form.addEventListener('submit', async function(e) {
     const isValidExtension = validExtensions.includes(file.type) || fileName.endsWith('.pdf') || fileName.endsWith('.docx');
 
     if (!isValidExtension) {
-        showMessage('Xəta: Fayl göndərilmədi. Yalnız PDF və DOCX formatları qəbul edilir!', 'error');
+        showMessage(getTranslation('errorFormat'), 'error');
         return;
     }
 
@@ -215,7 +308,7 @@ form.addEventListener('submit', async function(e) {
 
     // Məlumatın Webhook-a göndərilməsi
     try {
-        submitBtn.textContent = 'Göndərilir...';
+        submitBtn.textContent = getTranslation('submitLoading');
         submitBtn.disabled = true;
 
         let response = await fetch(webhookUrl, {
@@ -244,20 +337,20 @@ form.addEventListener('submit', async function(e) {
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
-                    <span>CV uğurla yükləndi</span>
+                    <span>${getTranslation('successMsg')}</span>
                 </div>
             `;
             emailInput.disabled = true;
             submitBtn.style.display = 'none';
             statusMessage.style.display = 'none';
         } else {
-            showMessage(`Xəta baş verdi: CV göndərilə bilmədi (Server xətası: ${response.status}).`, 'error');
+            showMessage(`${getTranslation('errorServer')} (${response.status})`, 'error');
         }
     } catch (error) {
         console.error('Fetch xətası:', error);
-        showMessage('Xəta baş verdi: CV göndərilə bilmədi. İnternet bağlantınızı və ya CORS ayarlarını yoxlayın.', 'error');
+        showMessage(getTranslation('errorServer'), 'error');
     } finally {
-        submitBtn.textContent = 'CV-ni Göndər';
+        submitBtn.textContent = getTranslation('submitBtn');
         submitBtn.disabled = false;
     }
 });
