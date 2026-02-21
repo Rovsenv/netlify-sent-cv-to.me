@@ -34,7 +34,7 @@ const translations = {
     },
     en: {
         title: 'Career Support Agent',
-        subtitle: 'Upload your CV and get matched vacancys',
+        subtitle: 'Upload your CV and get matched vacancies',
         emailLabel: 'Your email address',
         emailPlaceholder: 'example@mail.com',
         fileLabel: 'CV File (PDF or DOCX)',
