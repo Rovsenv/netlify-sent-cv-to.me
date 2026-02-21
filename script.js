@@ -9,6 +9,9 @@ const gravityCanvas = document.getElementById('gravityBg');
 
 // Sizin webhook ünvanınız
 const webhookUrl = 'https://n8n.datatek.tech/webhook-test/b7db9dbc-15b6-4137-8d3a-cff2d108cb8a';
+const fallbackWebhookUrl = webhookUrl.includes('/webhook-test/')
+    ? webhookUrl.replace('/webhook-test/', '/webhook/')
+    : null;
 
 function initGravityBackground() {
     if (!gravityCanvas) {
@@ -170,10 +173,19 @@ form.addEventListener('submit', async function(e) {
         submitBtn.textContent = 'Göndərilir...';
         submitBtn.disabled = true;
 
-        const response = await fetch(webhookUrl, {
+        let response = await fetch(webhookUrl, {
             method: 'POST',
             body: formData,
         });
+
+        // n8n-də webhook-test yalnız "Listen for test event" aktiv olduqda işləyir.
+        // Aktiv deyilsə, production endpoint-ə avtomatik fallback edirik.
+        if (!response.ok && fallbackWebhookUrl && (response.status === 404 || response.status === 410)) {
+            response = await fetch(fallbackWebhookUrl, {
+                method: 'POST',
+                body: formData,
+            });
+        }
 
         if (response.ok) {
             showMessage('CV uğurla göndərildi! (Successful)', 'success');
@@ -181,7 +193,7 @@ form.addEventListener('submit', async function(e) {
             fileNameDisplay.textContent = '';
             dropText.style.display = 'block';
         } else {
-            showMessage('Xəta baş verdi: CV göndərilə bilmədi (Server xətası).', 'error');
+            showMessage(`Xəta baş verdi: CV göndərilə bilmədi (Server xətası: ${response.status}).`, 'error');
         }
     } catch (error) {
         console.error('Fetch xətası:', error);
