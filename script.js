@@ -26,7 +26,11 @@ const translations = {
         errorFile: 'Zəhmət olmasa, CV faylını yükləyin.',
         errorFormat: 'Yalnız PDF və DOCX formatları qəbul edilir!',
         errorServer: 'Xəta baş verdi: CV göndərilə bilmədi',
-        pageTitle: 'CV Yükləmə Portalı'
+        pageTitle: 'CV Yükləmə Portalı',
+        chatbotTitle: 'Karyera Köməkçisi',
+        chatbotWelcome: 'Salam! Mən sizin karyera köməkçinizəm. CV və iş axtarmağınız barədə suallarınızı soruşa bilərsiniz.',
+        chatInputPlaceholder: 'Sualınızı yazın...',
+        chatError: 'Xəta baş verdi. Zəhmət olmasa, yenidən cəhd edin.'
     },
     en: {
         title: 'Career Support Agent',
@@ -42,7 +46,11 @@ const translations = {
         errorFile: 'Please upload your CV file.',
         errorFormat: 'Only PDF and DOCX formats are accepted!',
         errorServer: 'Error: Could not submit CV',
-        pageTitle: 'CV Upload Portal'
+        pageTitle: 'CV Upload Portal',
+        chatbotTitle: 'Career Assistant',
+        chatbotWelcome: 'Hello! I am your career assistant. Feel free to ask questions about your CV and job search.',
+        chatInputPlaceholder: 'Type your question...',
+        chatError: 'An error occurred. Please try again.'
     }
 };
 
@@ -352,5 +360,144 @@ form.addEventListener('submit', async function(e) {
     } finally {
         submitBtn.textContent = getTranslation('submitBtn');
         submitBtn.disabled = false;
+    }
+});
+
+// ==================== CHATBOT ====================
+
+const chatbotToggle = document.getElementById('chatbotToggle');
+const chatbotWindow = document.getElementById('chatbotWindow');
+const chatbotClose = document.getElementById('chatbotClose');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSendBtn = document.getElementById('chatSendBtn');
+
+const chatbotWebhookUrl = 'https://n8n.datatek.tech/webhook-test/send-cv-to-bot';
+
+let isChatbotOpen = false;
+let isSendingMessage = false;
+
+function toggleChatbot() {
+    isChatbotOpen = !isChatbotOpen;
+    chatbotToggle.classList.toggle('active', isChatbotOpen);
+    chatbotWindow.classList.toggle('open', isChatbotOpen);
+    
+    if (isChatbotOpen) {
+        chatInput.focus();
+    }
+}
+
+function closeChatbot() {
+    isChatbotOpen = false;
+    chatbotToggle.classList.remove('active');
+    chatbotWindow.classList.remove('open');
+}
+
+function addMessage(text, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${sender}`;
+    messageDiv.textContent = text;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return messageDiv;
+}
+
+function addTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'chat-message bot typing';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return typingDiv;
+}
+
+function removeTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+async function sendChatMessage() {
+    const message = chatInput.value.trim();
+    
+    if (!message || isSendingMessage) {
+        return;
+    }
+    
+    isSendingMessage = true;
+    chatSendBtn.disabled = true;
+    chatInput.disabled = true;
+    
+    // İstifadəçi mesajını göstər
+    addMessage(message, 'user');
+    chatInput.value = '';
+    
+    // Yazı indikatoru göstər
+    addTypingIndicator();
+    
+    try {
+        const response = await fetch(chatbotWebhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                lang: currentLang,
+                timestamp: new Date().toISOString()
+            }),
+        });
+        
+        removeTypingIndicator();
+        
+        if (response.ok) {
+            const data = await response.json();
+            const botReply = data.reply || data.message || data.response || data.output || JSON.stringify(data);
+            addMessage(botReply, 'bot');
+        } else {
+            addMessage(getTranslation('chatError'), 'bot');
+        }
+    } catch (error) {
+        console.error('Chatbot xətası:', error);
+        removeTypingIndicator();
+        addMessage(getTranslation('chatError'), 'bot');
+    } finally {
+        isSendingMessage = false;
+        chatSendBtn.disabled = false;
+        chatInput.disabled = false;
+        chatInput.focus();
+    }
+}
+
+// Chatbot event listeners
+if (chatbotToggle) {
+    chatbotToggle.addEventListener('click', toggleChatbot);
+}
+
+if (chatbotClose) {
+    chatbotClose.addEventListener('click', closeChatbot);
+}
+
+if (chatSendBtn) {
+    chatSendBtn.addEventListener('click', sendChatMessage);
+}
+
+if (chatInput) {
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    });
+}
+
+// Chatbot pəncərəsini kənardan tıklayanda bağla
+document.addEventListener('click', function(e) {
+    if (isChatbotOpen && 
+        !chatbotWindow.contains(e.target) && 
+        !chatbotToggle.contains(e.target)) {
+        closeChatbot();
     }
 });
