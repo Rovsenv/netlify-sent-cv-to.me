@@ -177,18 +177,20 @@ form.addEventListener('submit', async function(e) {
             method: 'POST',
             body: formData,
         });
+        let requestSucceeded = response.ok || response.type === 'opaque';
 
         // n8n-də webhook-test yalnız "Listen for test event" aktiv olduqda işləyir.
         // Aktiv deyilsə, production endpoint-ə avtomatik fallback edirik.
-        if (!response.ok && fallbackWebhookUrl && (response.status === 404 || response.status === 410)) {
+        if (!requestSucceeded && fallbackWebhookUrl && (response.status === 404 || response.status === 410)) {
             response = await fetch(fallbackWebhookUrl, {
                 method: 'POST',
                 body: formData,
             });
+            requestSucceeded = response.ok || response.type === 'opaque';
         }
 
-        if (response.ok) {
-            showMessage('CV uğurla göndərildi! (Successful)', 'success');
+        if (requestSucceeded) {
+            showMessage('CV-niz uğurla yükləndi.', 'success');
             form.reset();
             fileNameDisplay.textContent = '';
             dropText.style.display = 'block';

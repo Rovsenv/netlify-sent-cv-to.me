@@ -17,7 +17,10 @@
 }
 
 body {
-    background-color: var(--bg-color);
+    background:
+        radial-gradient(circle at 10% 10%, rgba(79, 70, 229, 0.15), transparent 35%),
+        radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.12), transparent 40%),
+        var(--bg-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,6 +28,30 @@ body {
     padding: 20px;
     position: relative;
     overflow: hidden;
+}
+
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    filter: blur(70px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+body::before {
+    top: -60px;
+    left: -40px;
+    background: rgba(79, 70, 229, 0.25);
+}
+
+body::after {
+    right: -50px;
+    bottom: -70px;
+    background: rgba(16, 185, 129, 0.22);
 }
 
 #gravityBg {
@@ -37,10 +64,13 @@ body {
 }
 
 .card {
-    background-color: var(--card-bg);
+    background: rgba(255, 255, 255, 0.86);
     padding: 40px;
     border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 14px 32px rgba(31, 41, 55, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     width: 100%;
     max-width: 450px;
     transition: transform 0.3s ease;
@@ -101,6 +131,7 @@ input[type="email"]:focus {
     cursor: pointer;
     transition: border-color 0.3s, background-color 0.3s;
     position: relative;
+    backdrop-filter: blur(2px);
 }
 
 .file-drop-area:hover, .file-drop-area.active {
@@ -126,7 +157,7 @@ input[type="email"]:focus {
 button {
     width: 100%;
     padding: 14px;
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     color: white;
     border: none;
     border-radius: 8px;
@@ -138,7 +169,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--primary-hover);
+    filter: brightness(1.03);
 }
 
 button:disabled {
@@ -154,6 +185,8 @@ button:disabled {
     font-size: 14px;
     display: none;
     font-weight: 500;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .message.error {
