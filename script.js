@@ -6,6 +6,7 @@ const dropText = document.getElementById('dropText');
 const statusMessage = document.getElementById('statusMessage');
 const submitBtn = document.getElementById('submitBtn');
 const gravityCanvas = document.getElementById('gravityBg');
+const dropArea = document.getElementById('dropArea');
 
 // Sizin webhook ünvanınız
 const webhookUrl = 'https://n8n.datatek.tech/webhook-test/b7db9dbc-15b6-4137-8d3a-cff2d108cb8a';
@@ -192,10 +193,19 @@ form.addEventListener('submit', async function(e) {
         }
 
         if (requestSucceeded) {
-            showMessage('CV-niz uğurla yükləndi.', 'success');
-            form.reset();
-            fileNameDisplay.textContent = '';
-            dropText.style.display = 'block';
+            // Formu deaktiv et və uğur göstər
+            dropArea.classList.add('success');
+            dropArea.innerHTML = `
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <span>CV uğurla yükləndi</span>
+                </div>
+            `;
+            emailInput.disabled = true;
+            submitBtn.style.display = 'none';
+            statusMessage.style.display = 'none';
         } else {
             showMessage(`Xəta baş verdi: CV göndərilə bilmədi (Server xətası: ${response.status}).`, 'error');
         }
