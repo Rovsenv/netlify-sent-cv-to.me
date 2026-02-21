@@ -176,6 +176,7 @@ form.addEventListener('submit', async function(e) {
         let response = await fetch(webhookUrl, {
             method: 'POST',
             body: formData,
+            mode: 'no-cors',
         });
         let requestSucceeded = response.ok || response.type === 'opaque';
 
@@ -185,6 +186,7 @@ form.addEventListener('submit', async function(e) {
             response = await fetch(fallbackWebhookUrl, {
                 method: 'POST',
                 body: formData,
+                mode: 'no-cors',
             });
             requestSucceeded = response.ok || response.type === 'opaque';
         }
