@@ -454,7 +454,19 @@ async function sendChatMessage() {
         
         if (response.ok) {
             const data = await response.json();
-            const botReply = data.reply || data.message || data.response || data.output || JSON.stringify(data);
+            
+            // Cavab formatını analiz et
+            let botReply;
+            if (Array.isArray(data) && data.length > 0) {
+                // Format: [{"output": "..."}]
+                botReply = data[0].output || data[0].reply || data[0].message || data[0].response || JSON.stringify(data[0]);
+            } else if (typeof data === 'object') {
+                // Format: {"output": "..."}
+                botReply = data.output || data.reply || data.message || data.response || JSON.stringify(data);
+            } else {
+                botReply = String(data);
+            }
+            
             addMessage(botReply, 'bot');
         } else {
             addMessage(getTranslation('chatError'), 'bot');
