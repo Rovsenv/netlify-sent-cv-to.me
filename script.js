@@ -5,9 +5,112 @@ const fileNameDisplay = document.getElementById('fileName');
 const dropText = document.getElementById('dropText');
 const statusMessage = document.getElementById('statusMessage');
 const submitBtn = document.getElementById('submitBtn');
+const gravityCanvas = document.getElementById('gravityBg');
 
 // Sizin webhook ünvanınız
 const webhookUrl = 'https://n8n.datatek.tech/webhook-test/b7db9dbc-15b6-4137-8d3a-cff2d108cb8a';
+
+function initGravityBackground() {
+    if (!gravityCanvas) {
+        return;
+    }
+
+    const ctx = gravityCanvas.getContext('2d');
+    if (!ctx) {
+        return;
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+        return;
+    }
+
+    const particles = [];
+    const primaryColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--primary-color')
+        .trim() || '#4F46E5';
+    const gravity = 0.04;
+    const particleCount = Math.max(30, Math.min(100, Math.floor(window.innerWidth / 16)));
+    let width = 0;
+    let height = 0;
+    let rafId;
+
+    function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        gravityCanvas.width = width;
+        gravityCanvas.height = height;
+    }
+
+    function createParticle() {
+        return {
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: Math.random() * 0.8,
+            radius: 1.2 + Math.random() * 2.6,
+            alpha: 0.15 + Math.random() * 0.35
+        };
+    }
+
+    function drawParticle(particle) {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = primaryColor;
+        ctx.globalAlpha = particle.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+
+    function updateParticle(particle) {
+        particle.vy += gravity;
+        particle.y += particle.vy;
+        particle.x += particle.vx;
+
+        if (particle.y - particle.radius > height) {
+            particle.y = -particle.radius;
+            particle.x = Math.random() * width;
+            particle.vy = Math.random() * 0.8;
+        }
+
+        if (particle.x < -particle.radius) {
+            particle.x = width + particle.radius;
+        }
+
+        if (particle.x > width + particle.radius) {
+            particle.x = -particle.radius;
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+            const particle = particles[i];
+            updateParticle(particle);
+            drawParticle(particle);
+        }
+
+        rafId = window.requestAnimationFrame(animate);
+    }
+
+    resizeCanvas();
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(createParticle());
+    }
+
+    animate();
+    window.addEventListener('resize', resizeCanvas);
+
+    window.addEventListener('beforeunload', function() {
+        if (rafId) {
+            window.cancelAnimationFrame(rafId);
+        }
+    });
+}
+
+initGravityBackground();
 
 // Fayl seçildikdə adını göstərmək
 fileInput.addEventListener('change', function() {

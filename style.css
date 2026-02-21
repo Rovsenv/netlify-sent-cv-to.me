@@ -23,6 +23,17 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+#gravityBg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .card {
@@ -33,6 +44,8 @@ body {
     width: 100%;
     max-width: 450px;
     transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .card:hover {
