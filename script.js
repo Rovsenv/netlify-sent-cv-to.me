@@ -116,11 +116,28 @@ function initGravityBackground() {
 
 initGravityBackground();
 
-// Fayl seçildikdə adını göstərmək
+// Fayl seçildikdə adını göstərmək və formatı yoxlamaq
 fileInput.addEventListener('change', function() {
     if (this.files && this.files.length > 0) {
-        fileNameDisplay.textContent = this.files[0].name;
+        const file = this.files[0];
+        const fileName = file.name.toLowerCase();
+        const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const isValid = validTypes.includes(file.type) || fileName.endsWith('.pdf') || fileName.endsWith('.docx');
+
+        if (!isValid) {
+            // Yanlış format - faylı avtomatik sil
+            this.value = '';
+            fileNameDisplay.textContent = '';
+            dropText.style.display = 'block';
+            showMessage('Yalnız PDF və DOCX formatları qəbul edilir!', 'error');
+            return;
+        }
+
+        // Düzgün format
+        fileNameDisplay.textContent = file.name;
         dropText.style.display = 'none';
+        statusMessage.className = 'message';
+        statusMessage.style.display = 'none';
     } else {
         fileNameDisplay.textContent = '';
         dropText.style.display = 'block';
