@@ -629,13 +629,16 @@ button:disabled {
 /* Mobile responsive */
 @media (max-width: 480px) {
     .chatbot-window {
+        position: fixed;
         bottom: 0;
         right: 0;
         left: 0;
+        top: auto;
         width: 100%;
         max-width: 100%;
-        height: calc(100vh - 80px);
-        max-height: none;
+        height: 70vh;
+        max-height: 500px;
+        min-height: 350px;
         border-radius: 16px 16px 0 0;
     }
     
@@ -644,14 +647,18 @@ button:disabled {
         right: 16px;
     }
     
+    /* Active state - toggle stays in place, doesn't move */
     .chatbot-toggle.active {
-        bottom: calc(100vh - 60px);
         z-index: 250;
+        /* Remove bottom repositioning - keep button in same place */
     }
     
     .chatbot-input-area {
         padding: 10px 12px;
         gap: 8px;
+        position: sticky;
+        bottom: 0;
+        background: var(--card-bg);
     }
     
     #chatInput {
@@ -665,5 +672,25 @@ button:disabled {
         height: 44px;
         min-width: 44px;
         flex-shrink: 0;
+    }
+    
+    .chatbot-messages {
+        flex: 1;
+        min-height: 150px;
+        max-height: calc(70vh - 130px);
+    }
+    
+    .chatbot-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    /* Ensure close button is always visible and tappable */
+    .chatbot-close {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
     }
 }
