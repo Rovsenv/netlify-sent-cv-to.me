@@ -26,6 +26,7 @@ const translations = {
         errorFile: 'Zəhmət olmasa, CV faylını yükləyin.',
         errorFormat: 'Yalnız PDF və DOCX formatları qəbul edilir!',
         errorServer: 'Xəta baş verdi: CV göndərilə bilmədi',
+        errorDailyLimit: 'Gündəlik limit: Bu cihazdan gün ərzində yalnız 1 CV yükləyə bilərsiniz. Sabah yenidən cəhd edin.',
         pageTitle: 'CV Yükləmə Portalı',
         chatbotTitle: 'Karyera Köməkçisi',
         chatbotWelcome: 'Salam! Mən sizin karyera köməkçinizəm. CV və iş axtarmağınız barədə suallarınızı soruşa bilərsiniz.',
@@ -46,6 +47,7 @@ const translations = {
         errorFile: 'Please upload your CV file.',
         errorFormat: 'Only PDF and DOCX formats are accepted!',
         errorServer: 'Error: Could not submit CV',
+        errorDailyLimit: 'Daily limit: You can only upload 1 CV per day from this device. Please try again tomorrow.',
         pageTitle: 'CV Upload Portal',
         chatbotTitle: 'Career Assistant',
         chatbotWelcome: 'Hello! I am your career assistant. Feel free to ask questions about your CV and job search.',
@@ -134,6 +136,22 @@ initTheme();
 
 if (themeToggle) {
     themeToggle.addEventListener('click', toggleTheme);
+}
+
+// Gündəlik yükləmə limiti yoxlaması
+const DAILY_LIMIT_KEY = 'cv_upload_date';
+
+function getTodayDateString() {
+    return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+}
+
+function hasUploadedToday() {
+    const lastUploadDate = localStorage.getItem(DAILY_LIMIT_KEY);
+    return lastUploadDate === getTodayDateString();
+}
+
+function markUploadedToday() {
+    localStorage.setItem(DAILY_LIMIT_KEY, getTodayDateString());
 }
 
 // Sizin webhook ünvanınız
@@ -283,6 +301,12 @@ form.addEventListener('submit', async function(e) {
     e.preventDefault(); // Səhifənin yenilənməsinin qarşısını alırıq
     statusMessage.style.display = 'none';
 
+    // 0. Gündəlik limit yoxlaması
+    if (hasUploadedToday()) {
+        showMessage(getTranslation('errorDailyLimit'), 'error');
+        return;
+    }
+
     const file = fileInput.files[0];
     const email = emailInput.value;
 
@@ -338,6 +362,9 @@ form.addEventListener('submit', async function(e) {
         }
 
         if (requestSucceeded) {
+            // Gündəlik limiti qeyd et
+            markUploadedToday();
+            
             // Formu deaktiv et və uğur göstər
             dropArea.classList.add('success');
             dropArea.innerHTML = `
