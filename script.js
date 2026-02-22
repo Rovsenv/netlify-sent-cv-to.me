@@ -154,6 +154,26 @@ function markUploadedToday() {
     localStorage.setItem(DAILY_LIMIT_KEY, getTodayDateString());
 }
 
+function disableFormForToday() {
+    // Formu deaktiv et
+    fileInput.disabled = true;
+    emailInput.disabled = true;
+    submitBtn.disabled = true;
+    dropArea.style.opacity = '0.5';
+    dropArea.style.pointerEvents = 'none';
+    
+    // Mesaj göstər
+    showMessage(getTranslation('errorDailyLimit'), 'error');
+    statusMessage.style.display = 'block';
+}
+
+// Səhifə yükləndikdə limit yoxla
+function checkDailyLimitOnLoad() {
+    if (hasUploadedToday()) {
+        disableFormForToday();
+    }
+}
+
 // Sizin webhook ünvanınız
 const webhookUrl = 'https://n8n.datatek.tech/webhook-test/b7db9dbc-15b6-4137-8d3a-cff2d108cb8a';
 const fallbackWebhookUrl = webhookUrl.includes('/webhook-test/')
@@ -262,6 +282,9 @@ function initGravityBackground() {
 
 initGravityBackground();
 
+// Gündəlik limit yoxla
+checkDailyLimitOnLoad();
+
 // Fayl seçildikdə adını göstərmək və formatı yoxlamaq
 fileInput.addEventListener('change', function() {
     if (this.files && this.files.length > 0) {
@@ -304,6 +327,7 @@ form.addEventListener('submit', async function(e) {
     // 0. Gündəlik limit yoxlaması
     if (hasUploadedToday()) {
         showMessage(getTranslation('errorDailyLimit'), 'error');
+        disableFormForToday();
         return;
     }
 
