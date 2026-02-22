@@ -647,10 +647,11 @@ button:disabled {
         right: 16px;
     }
     
-    /* Active state - toggle stays in place, doesn't move */
+    /* Hide toggle button when chatbot is open on mobile */
     .chatbot-toggle.active {
-        z-index: 250;
-        /* Remove bottom repositioning - keep button in same place */
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
     }
     
     .chatbot-input-area {
