@@ -100,6 +100,11 @@ function applyTranslations() {
     
     document.title = t.pageTitle;
     document.documentElement.lang = currentLang;
+    
+    // Əgər gündəlik limit mesajı göstərilibsə, onu da yenilə
+    if (statusMessage && statusMessage.classList.contains('error') && hasUploadedToday()) {
+        statusMessage.textContent = t.errorDailyLimit;
+    }
 }
 
 function getTranslation(key) {
