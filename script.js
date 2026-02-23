@@ -14,7 +14,7 @@ const langToggle = document.getElementById('langToggle');
 const translations = {
     az: {
         title: 'Karyera Dəstəyi Agenti',
-        subtitle: 'CV-nizi yükləyin və uyğunluğunu vakansiyalar əldə edin',
+        subtitle: 'CV-nizi yükləyin və uyğun vakansiyalar əldə edin',
         emailLabel: 'E-poçt ünvanınız',
         emailPlaceholder: 'nümunə@mail.com',
         fileLabel: 'CV Faylı (PDF və ya DOCX)',
