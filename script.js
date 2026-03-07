@@ -26,7 +26,7 @@ const translations = {
         errorFile: 'Zəhmət olmasa, CV faylını yükləyin.',
         errorFormat: 'Yalnız PDF və DOCX formatları qəbul edilir!',
         errorServer: 'Xəta baş verdi: CV göndərilə bilmədi',
-        errorDailyLimit: 'Gündəlik limit: Bu cihazdan gün ərzində yalnız 1 CV yükləyə bilərsiniz. Sabah yenidən cəhd edin.',
+        errorDailyLimit: 'Gündəlik limit: Bu cihazdan gün ərzində yalnız 10 CV yükləyə bilərsiniz. Sabah yenidən cəhd edin.',
         pageTitle: 'CV Yükləmə Portalı',
         chatbotTitle: 'Karyera Köməkçisi',
         chatbotWelcome: 'Salam! Mən sizin karyera köməkçinizəm. CV və iş axtarmağınız barədə suallarınızı soruşa bilərsiniz.',
@@ -47,7 +47,7 @@ const translations = {
         errorFile: 'Please upload your CV file.',
         errorFormat: 'Only PDF and DOCX formats are accepted!',
         errorServer: 'Error: Could not submit CV',
-        errorDailyLimit: 'Daily limit: You can only upload 1 CV per day from this device. Please try again tomorrow.',
+        errorDailyLimit: 'Daily limit: You can only upload 10 CVs per day from this device. Please try again tomorrow.',
         pageTitle: 'CV Upload Portal',
         chatbotTitle: 'Career Assistant',
         chatbotWelcome: 'Hello! I am your career assistant. Feel free to ask questions about your CV and job search.',
@@ -102,7 +102,7 @@ function applyTranslations() {
     document.documentElement.lang = currentLang;
     
     // Əgər gündəlik limit mesajı göstərilibsə, onu da yenilə
-    if (statusMessage && statusMessage.classList.contains('error') && hasUploadedToday()) {
+    if (statusMessage && statusMessage.classList.contains('error') && hasReachedDailyLimit()) {
         statusMessage.textContent = t.errorDailyLimit;
     }
 }
@@ -144,19 +144,41 @@ if (themeToggle) {
 }
 
 // Gündəlik yükləmə limiti yoxlaması
-const DAILY_LIMIT_KEY = 'cv_upload_date';
+const DAILY_LIMIT_KEY = 'cv_upload_data';
+const MAX_DAILY_UPLOADS = 10;
 
 function getTodayDateString() {
     return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 }
 
-function hasUploadedToday() {
-    const lastUploadDate = localStorage.getItem(DAILY_LIMIT_KEY);
-    return lastUploadDate === getTodayDateString();
+function getUploadData() {
+    const data = localStorage.getItem(DAILY_LIMIT_KEY);
+    if (data) {
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            return { date: '', count: 0 };
+        }
+    }
+    return { date: '', count: 0 };
+}
+
+function hasReachedDailyLimit() {
+    const data = getUploadData();
+    const today = getTodayDateString();
+    return data.date === today && data.count >= MAX_DAILY_UPLOADS;
 }
 
 function markUploadedToday() {
-    localStorage.setItem(DAILY_LIMIT_KEY, getTodayDateString());
+    const data = getUploadData();
+    const today = getTodayDateString();
+    if (data.date === today) {
+        data.count += 1;
+    } else {
+        data.date = today;
+        data.count = 1;
+    }
+    localStorage.setItem(DAILY_LIMIT_KEY, JSON.stringify(data));
 }
 
 function disableFormForToday() {
@@ -174,7 +196,7 @@ function disableFormForToday() {
 
 // Səhifə yükləndikdə limit yoxla
 function checkDailyLimitOnLoad() {
-    if (hasUploadedToday()) {
+    if (hasReachedDailyLimit()) {
         disableFormForToday();
     }
 }
@@ -330,7 +352,7 @@ form.addEventListener('submit', async function(e) {
     statusMessage.style.display = 'none';
 
     // 0. Gündəlik limit yoxlaması
-    if (hasUploadedToday()) {
+    if (hasReachedDailyLimit()) {
         showMessage(getTranslation('errorDailyLimit'), 'error');
         disableFormForToday();
         return;
