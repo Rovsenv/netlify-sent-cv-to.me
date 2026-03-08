@@ -450,7 +450,7 @@ const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
 
-const chatbotWebhookUrl = 'https://n8n.datatek.tech/webhook-test/dataanalyticschatbot';
+const chatbotWebhookUrl = 'https://n8n.datatek.tech/webhook/dataanalyticschatbot';
 
 let isChatbotOpen = false;
 let isSendingMessage = false;
