@@ -202,7 +202,7 @@ function checkDailyLimitOnLoad() {
 }
 
 // Sizin webhook ünvanınız
-const webhookUrl = 'https://n8n.datatek.tech/webhook/b7db9dbc-15b6-4137-8d3a-cff2d108cb8a';
+const webhookUrl = 'https://n8n.datatek.tech/webhook-test/b7db9dbc-15b6-4137-8d3a-cff2d108cb8a';
 const fallbackWebhookUrl = webhookUrl.includes('/webhook/')
     ? webhookUrl.replace('/webhook/', '/webhook/')
     : null;
@@ -450,7 +450,7 @@ const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
 
-const chatbotWebhookUrl = 'https://n8n.datatek.tech/webhook-test/dataanalyticschatbot';
+const chatbotWebhookUrl = 'https://n8n.datatek.tech/webhook/dataanalyticschatbot';
 
 let isChatbotOpen = false;
 let isSendingMessage = false;
